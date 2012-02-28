@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+  <link rel="stylesheet" type="text/css" href="style.css" />
+  
+  <!-- third party libraries -->
+  <script type="text/javascript" src="jquery-1.6.1.min.js"></script>
+  <script type="text/javascript" src="handlebars.1.0.0.beta.3.js"></script>
+  
+  <!-- application level libraries, application.js needs to be declared first -->
+  <script type="text/javascript" src="application.js"></script>
+  <script type="text/javascript" src="config.js"></script>
+  <script type="text/javascript" src="localized-copy.js"></script>
+  <script type="text/javascript" src="events.js"></script>
+  <script type="text/javascript" src="row.js"></script>
+  <script type="text/javascript" src="list.js"></script>
+  <script type="text/javascript" src="info.js"></script>
+  <script type="text/javascript" src="nav.js"></script>
+  <script type="text/javascript" src="videoplayer.js"></script>
+  <script type="text/javascript" src="ad-policy.js"></script>
+  <script type="text/javascript" src="yume-sdk.js"></script>
+  
+  <!-- analytics -->
+  <script type="text/javascript">var _gaq = _gaq || [];</script>
+  <script type="text/javascript" src="http://www.google-analytics.com/ga.js" async="true"></script>
+  <script type="text/javascript" src="analytics.js"></script>
+
+</head>
+<body class="main">
+  <div id="content">
+    
+    <!-- loading spinner -->
+    <div id="spinner">
+      <div class="ball1"></div> 
+      <div class="ball2"></div> 
+      <div class="ball3"></div> 
+      <div class="ball4"></div> 
+      <div class="ball5"></div> 
+      <div class="ball6"></div> 
+      <div class="ball7"></div> 
+      <div class="ball8"></div>
+    </div>
+    
+    <!-- main close button -->
+    <a id="close" class="close" href="#" tabindex="1" data-tab-row="1"></a>
+
+    <!-- browse state back button -->
+    <a id="browse-back" class="back" href="#" tabindex="2" data-tab-row="1"></a>
+
+    <!-- video player -->
+    <div id="player">
+      <div id="bc-video"></div>
+      <div id="bc-back">
+        <a class="back" href="#" tabindex="1" data-tab-row="1"></a>
+      </div>
+      <div id="bc-controls-background"></div>
+      <div id="bc-controls" data-tab-row="1" tabindex="1" data-tab-main="true">
+        <div id="bc-buttons">
+          <a href="#" id="bc-play-control" class="icon" tabindex="2" data-tab-row="2"></a>
+          <a href="#" id="bc-rw-control" class="icon" tabindex="3" data-tab-row="2"></a>
+          <a href="#" id="bc-ff-control" class="icon" tabindex="4" data-tab-row="2"></a>
+          <a href="#" id="bc-info-control" class="icon" tabindex="5" data-tab-row="2"></a>
+          <div id="bc-buttons-text">
+            <a href="#" id="bc-browse-control" class="text" tabindex="6" data-tab-row="2"></a>
+            <a href="#" id="bc-qmenu-control" class="text" tabindex="7" data-tab-row="2"></a>
+          </div>
+        </div>
+
+        <div id="bc-progress-holder">
+          <div id="bc-load-progress"></div>
+          <div id="bc-play-progress"></div>
+        </div>
+        <div id="bc-time-control">00:00 / 00:00</div>
+        <div id="bc-play-indicator"></div>
+        <div id="bc-video-title"></div>
+      </div>
+    </div>
+    
+    <!-- main screen with navigation -->
+    <div id="main">
+      <div id="navigation"></div>
+      <div id="playlists" class="invisible"></div>
+      <div id="logo"></div>
+    </div>
+    
+    <!-- overlay for popups -->
+    <div id="overlay"></div>
+    
+    <!-- info popup -->
+    <div id="info">
+      <a class="back" href="#" tabindex="1" data-tab-row="1"></a>
+    </div>
+
+    <!-- left/right arrows -->
+    <a id="right" href="#"></a>
+    <a id="left" href="#"></a>
+
+    <!-- error popup -->
+    <div id="error">
+      <div id="error-box">
+        <a id="error-back" class="back" href="#"></a>
+        <p id="error-message"></p>
+      </div>
+    </div>
+    
+    <!-- debug screen -->
+    <div id="debug">
+      <ul></ul>
+    </div>
+
+    <!-- main navigation template -->
+    <script id="tmplNavigation" type="text/x-handlebars-template">
+      {{#each playlists}}
+      <div class="navigation-container" tabindex="2" data-tab-row="2" data-tab-main="true">
+        <span class="navigation-left navigation-arrow"><span></span></span>
+        <span class="navigation-right navigation-arrow"><span></span></span>
+        <span class="playlist-title">{{name}}</span>
+      </div>
+      {{/each}}
+    </script>
+    
+    <!-- template used to generate the list of playlists -->
+    <script id="tmplPlaylists" type="text/x-handlebars-template">
+      <ul>
+        {{#each playlists}}
+        <li>
+          <div class="playlist"></div>
+          <div class="description-box">
+            <p class="name"></p>
+            <p class="description"></p>
+          </div>
+        </li>
+        {{/each}}
+      </ul>
+    </script>
+    
+    <!-- template used to generate a single playlist -->
+    <script id="tmplPlaylist" type="text/x-handlebars-template">
+      {{#each videos}}
+      <div class="item" tabindex="2" data-tab-row="{{#if ../isInfo}}2{{else}}3{{/if}}" data-tab-main="true">
+          <img src="{{this.videoStillURL}}" />
+          <div class="border"></div>
+        </div>
+      {{/each}}
+    </script>
+    
+    <!-- template used to generate the info popup -->
+    <script id="tmplInfo" type="text/x-handlebars-template">
+      <div class="description-box">
+        <p class="name">{{name}}</p>
+        <p class="description">{{shortDescription}}</p>
+
+        <div class="recommended-container">
+          <p class="recommended">{{recommendedTitle}}</p>
+          <div class="playlist"></div>
+          <p class="video-name"></p>
+        </div>
+      </div>
+    </script>
+
+  </div>
+</body>
+</html>
